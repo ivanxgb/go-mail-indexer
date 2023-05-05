@@ -1,3 +1,7 @@
 package main
 
-func main() {}
+import ia "indexer/init_app"
+
+func main() {
+	ia.Init()
+}
