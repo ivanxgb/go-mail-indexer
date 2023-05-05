@@ -25,13 +25,22 @@ func GetFilesInDirectory(dirPath string) {
 		}
 
 		filesCount++
-		fmt.Println(path)
 		fmt.Println("Files found: ", filesCount)
-
+		fmt.Println(readFile(path))
 		return nil
 	})
 
 	if err != nil {
 		utils.ErrorPrinter("There was an error reading the directory")
 	}
+}
+
+func readFile(filepath string) (string, error) {
+	file, err := os.ReadFile(filepath)
+	if err != nil {
+		fmt.Println("There was an error opening the file: " + filepath)
+		return "", err
+	}
+
+	return string(file), nil
 }
