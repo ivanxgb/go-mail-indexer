@@ -9,22 +9,37 @@ import (
 	"net/http"
 )
 
+const (
+	EmailBatchSize = 1000
+)
+
 // SendFilesToServer receives a slice of strings that represent the path of the emails to be sent to the server
 func SendFilesToServer(filesPath []string) {
+	fmt.Println("Total files found: ", len(filesPath))
 	var emailJsonArray []model.Email
+
+	var mailConverted = 0
+	var mailsWithError = 0
+
 	for _, filePath := range filesPath {
 		email, err := de.EmailConverter(filePath)
 		if err != nil {
-			fmt.Println("There was an error converting the file to json")
+			mailsWithError++
 			continue
 		}
+
+		mailConverted++
 		emailJsonArray = append(emailJsonArray, email)
 
-		if len(emailJsonArray) == 100 {
+		if len(emailJsonArray) == EmailBatchSize {
 			PostEmails(emailJsonArray)
 			emailJsonArray = nil
 		}
 	}
+
+	fmt.Println("Total mails sent: ", mailConverted)
+	fmt.Println("Total mails with error or incorrect format: ", mailsWithError)
+
 }
 
 // PostEmails receives a slice of model.Email and converts it to json to be sent to the server
