@@ -53,14 +53,14 @@ func parseMail(content string) (model.Email, error) {
 		MessageID: emailParsed.Header.Get("Message-Id"),
 		Date:      emailParsed.Header.Get("Date"),
 		From:      emailParsed.Header.Get("From"),
-		To:        parseHeaderList(emailParsed.Header.Get("To")),
+		To:        emailParsed.Header.Get("To"),
 		Subject:   emailParsed.Header.Get("Subject"),
-		CC:        parseHeaderList(emailParsed.Header.Get("Cc")),
-		BCC:       parseHeaderList(emailParsed.Header.Get("Bcc")),
+		CC:        emailParsed.Header.Get("Cc"),
+		BCC:       emailParsed.Header.Get("Bcc"),
 		XFrom:     emailParsed.Header.Get("X-From"),
-		XTo:       parseHeaderList(emailParsed.Header.Get("X-To")),
-		XCC:       parseHeaderList(emailParsed.Header.Get("X-Cc")),
-		XBCC:      parseHeaderList(emailParsed.Header.Get("X-Bcc")),
+		XTo:       emailParsed.Header.Get("X-To"),
+		XCC:       emailParsed.Header.Get("X-Cc"),
+		XBCC:      emailParsed.Header.Get("X-Bcc"),
 		XFolder:   emailParsed.Header.Get("X-Folder"),
 		XFileName: emailParsed.Header.Get("X-Filename"),
 	}
@@ -71,15 +71,6 @@ func parseMail(content string) (model.Email, error) {
 		newEmail.Content = string(emailContent)
 	}
 	return newEmail, nil
-}
-
-func parseHeaderList(header string) []string {
-	// check if header is empty
-	if header == "" {
-		return nil
-	}
-
-	return strings.Split(header, ", ")
 }
 
 //Converting email: /Users/ivanxgb/Desktop/mails/maildir/baughman-d/calendar/19.
