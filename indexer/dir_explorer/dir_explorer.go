@@ -20,7 +20,7 @@ func GetFilesPath(dirPath string) ([]string, error) {
 		}
 
 		// If the path is not a directory or the file extension is valid, is added to the slice.
-		if !info.IsDir() || filepath.Ext(path) == extensionFile {
+		if !info.IsDir() && filepath.Ext(path) == extensionFile {
 			filesPath = append(filesPath, path)
 		}
 
