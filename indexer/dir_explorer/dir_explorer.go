@@ -9,10 +9,10 @@ const (
 	extensionFile = "."
 )
 
-// GetFilesPath receives a directory path and returns a slice of strings with
+// GetFilePaths receives a directory path and returns a slice of strings with
 // the path of all the files inside the directory.
-func GetFilesPath(dirPath string) ([]string, error) {
-	var filesPath []string
+func GetFilePaths(dirPath string) ([]string, error) {
+	var filePaths []string
 
 	err := filepath.Walk(dirPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -21,7 +21,7 @@ func GetFilesPath(dirPath string) ([]string, error) {
 
 		// If the path is not a directory or the file extension is valid, is added to the slice.
 		if !info.IsDir() && filepath.Ext(path) == extensionFile {
-			filesPath = append(filesPath, path)
+			filePaths = append(filePaths, path)
 		}
 
 		return nil
@@ -31,5 +31,5 @@ func GetFilesPath(dirPath string) ([]string, error) {
 		return nil, err
 	}
 
-	return filesPath, nil
+	return filePaths, nil
 }
