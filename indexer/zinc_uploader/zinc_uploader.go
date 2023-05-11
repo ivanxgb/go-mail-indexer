@@ -12,23 +12,22 @@ import (
 
 const (
 	EmailBatchSize = 1000
-	GoRoutines     = 5
+	GoRoutines     = 4
 )
 
-// SendFilesToServer receives a slice of strings that represent the path of the emails to be sent to the server
-func SendFilesToServer(filesPath []string) {
-	totalFiles := len(filesPath)
-	var errorCounter int
-
-	var wg sync.WaitGroup
-	filesErrorChan := make(chan int, GoRoutines)
-	wg.Add(GoRoutines)
-
+// ProcessFiles receives a slice of strings that represent the path of the emails to be sent to the server
+func ProcessFiles(filePaths *[]string) {
+	files := *filePaths
+	totalFiles := len(files)
+	filesSlicesSize := totalFiles / GoRoutines
+	var fileErrorCounter, errorPostCounter, indexSliceStart int
 	fmt.Println("Total files to be processed: ", totalFiles)
 
-	// divide the files in slices to be processed by the goroutines
-	filesSlicesSize := totalFiles / GoRoutines
-	indexSliceStart := 0
+	var wg sync.WaitGroup
+	wg.Add(GoRoutines)
+	filesErrorChan := make(chan int, GoRoutines)
+	failMailsUpload := make(chan int, GoRoutines)
+
 	for i := 0; i < GoRoutines; i++ {
 		indexSliceEnd := indexSliceStart + filesSlicesSize
 
@@ -36,31 +35,39 @@ func SendFilesToServer(filesPath []string) {
 		if i == GoRoutines-1 {
 			indexSliceEnd = totalFiles
 		}
-		filesPathSlice := filesPath[indexSliceStart:indexSliceEnd]
+
+		filesPathSlice := files[indexSliceStart:indexSliceEnd]
 		indexSliceStart = indexSliceEnd
 
-		go ProcessFiles(filesPathSlice, &wg, filesErrorChan)
+		go processFiles(filesPathSlice, &wg, filesErrorChan, failMailsUpload)
 	}
 
 	wg.Wait()
 	close(filesErrorChan)
-	for filesError := range filesErrorChan {
-		errorCounter += filesError
+	close(failMailsUpload)
+
+	for err := range filesErrorChan {
+		fileErrorCounter += err
 	}
 
-	fmt.Println("Total files with errors: ", errorCounter)
-	fmt.Println("Total files sent to the server: ", totalFiles-errorCounter)
+	for err := range failMailsUpload {
+		errorPostCounter += err
+	}
+
+	fmt.Println("Total files with errors: ", fileErrorCounter)
+	fmt.Println("Total files don't uploaded: ", errorPostCounter)
+	fmt.Println("Total files uploaded: ", totalFiles-fileErrorCounter-errorPostCounter)
 }
 
-func ProcessFiles(filesPath []string, wg *sync.WaitGroup, errorChan chan int) {
+func processFiles(filePaths []string, wg *sync.WaitGroup, errorChan chan int, failMailsUpload chan int) {
 	defer wg.Done()
-	var errorCounter int
+	var errorFilesCounter, errorPostCounter int
 	var emails []model.Email
 
-	for _, filePath := range filesPath {
+	for _, filePath := range filePaths {
 		email, err := de.EmailConverter(filePath)
 		if err != nil {
-			errorCounter++
+			errorFilesCounter++
 			continue
 		}
 
@@ -69,35 +76,40 @@ func ProcessFiles(filesPath []string, wg *sync.WaitGroup, errorChan chan int) {
 
 		// if the emails slice is full, send it to the server
 		if len(emails) == EmailBatchSize {
-			PostEmails(emails)
+			if !processEmails(&emails) {
+				errorPostCounter += EmailBatchSize
+			}
 			emails = nil
 		}
 	}
 
 	// send the remaining emails to the server
 	if len(emails) > 0 {
-		PostEmails(emails)
+		if !processEmails(&emails) {
+			errorPostCounter += len(emails)
+		}
 	}
 
-	errorChan <- errorCounter
+	failMailsUpload <- errorPostCounter
+	errorChan <- errorFilesCounter
 }
 
-// PostEmails receives a slice of model.Email and converts it to json to be sent to the server
-func PostEmails(emails []model.Email) {
-	emailAsJson, err := de.EmailsToBulkJson(emails)
+// processEmails receives a slice of model.Email and converts it to json to be sent to the server
+func processEmails(emails *[]model.Email) bool {
+	jsonEmails, err := de.EmailsToBulkJson(emails)
 	if err != nil {
 		fmt.Println("There was an error converting the emails to json")
-		return
+		return false
 	}
 
-	PostFile(emailAsJson)
+	return postData(jsonEmails)
 }
 
-// PostFile receives a slice of bytes that represents the emails in json format and sends it to the server
-func PostFile(emails []byte) bool {
+// postData receives a slice of bytes that represents the data to be sent
+func postData(data []byte) bool {
 	api, user, pass := el.GetEnvData()
 
-	req, err := http.NewRequest("POST", api, bytes.NewBuffer(emails))
+	req, err := http.NewRequest("POST", api, bytes.NewBuffer(data))
 	if err != nil {
 		fmt.Println("There was an error creating the request")
 		return false
