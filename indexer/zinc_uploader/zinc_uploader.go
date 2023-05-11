@@ -17,15 +17,19 @@ const (
 
 // SendFilesToServer receives a slice of strings that represent the path of the emails to be sent to the server
 func SendFilesToServer(filesPath []string) {
-	var wg sync.WaitGroup
 	totalFiles := len(filesPath)
+	var errorCounter int
+
+	var wg sync.WaitGroup
+	filesErrorChan := make(chan int, GoRoutines)
+	wg.Add(GoRoutines)
+
 	fmt.Println("Total files to be processed: ", totalFiles)
 
 	// divide the files in slices to be processed by the goroutines
 	filesSlicesSize := totalFiles / GoRoutines
 	indexSliceStart := 0
 	for i := 0; i < GoRoutines; i++ {
-		wg.Add(1)
 		indexSliceEnd := indexSliceStart + filesSlicesSize
 
 		// handle the remainder
@@ -35,20 +39,28 @@ func SendFilesToServer(filesPath []string) {
 		filesPathSlice := filesPath[indexSliceStart:indexSliceEnd]
 		indexSliceStart = indexSliceEnd
 
-		go ProcessFiles(filesPathSlice, &wg)
+		go ProcessFiles(filesPathSlice, &wg, filesErrorChan)
 	}
 
 	wg.Wait()
+	close(filesErrorChan)
+	for filesError := range filesErrorChan {
+		errorCounter += filesError
+	}
 
+	fmt.Println("Total files with errors: ", errorCounter)
+	fmt.Println("Total files sent to the server: ", totalFiles-errorCounter)
 }
 
-func ProcessFiles(filesPath []string, wg *sync.WaitGroup) {
+func ProcessFiles(filesPath []string, wg *sync.WaitGroup, errorChan chan int) {
 	defer wg.Done()
+	var errorCounter int
 	var emails []model.Email
 
 	for _, filePath := range filesPath {
 		email, err := de.EmailConverter(filePath)
 		if err != nil {
+			errorCounter++
 			continue
 		}
 
@@ -66,11 +78,13 @@ func ProcessFiles(filesPath []string, wg *sync.WaitGroup) {
 	if len(emails) > 0 {
 		PostEmails(emails)
 	}
+
+	errorChan <- errorCounter
 }
 
 // PostEmails receives a slice of model.Email and converts it to json to be sent to the server
 func PostEmails(emails []model.Email) {
-	emailAsJson, err := de.EmailsToJSON(emails)
+	emailAsJson, err := de.EmailsToBulkJson(emails)
 	if err != nil {
 		fmt.Println("There was an error converting the emails to json")
 		return
@@ -107,6 +121,7 @@ func PostFile(emails []byte) bool {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
+		fmt.Println("Req. Rejected", resp.StatusCode, resp.Status)
 		return false
 	}
 
