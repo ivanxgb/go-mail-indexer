@@ -23,19 +23,13 @@ func EmailConverter(filePath string) (model.Email, error) {
 		return model.Email{}, err
 	}
 
-	emailParsed, err := parseMail(string(content))
-
-	if err != nil {
-		return model.Email{}, err
-	}
-
-	return emailParsed, nil
+	return parseMail(content)
 }
 
-func EmailsToBulkJson(emails []model.Email) ([]byte, error) {
+func EmailsToBulkJson(emails *[]model.Email) ([]byte, error) {
 	emailBulk := model.BulkV2{
 		Index:   ZincIndex,
-		Records: emails,
+		Records: *emails,
 	}
 
 	return emailBulk.ToJson()
@@ -54,7 +48,6 @@ func EmailsToJSON(emails []model.Email) ([]byte, error) {
 
 // parseMail receives a string that represents the content of the email and returns a model.Email struct with the email data
 func parseMail(content string) (model.Email, error) {
-
 	emailAsReader := strings.NewReader(content)
 	emailParsed, err := mail.ReadMessage(emailAsReader)
 
@@ -62,28 +55,37 @@ func parseMail(content string) (model.Email, error) {
 		return model.Email{}, err
 	}
 
-	newEmail := model.Email{
-		MessageID: emailParsed.Header.Get("Message-Id"),
+	email := model.Email{
+		MessageID: emailParsed.Header.Get("Message-ID"),
 		Date:      emailParsed.Header.Get("Date"),
 		From:      emailParsed.Header.Get("From"),
-		To:        emailParsed.Header.Get("To"),
+		To:        toList(emailParsed.Header.Get("To")),
 		Subject:   emailParsed.Header.Get("Subject"),
-		CC:        emailParsed.Header.Get("Cc"),
-		BCC:       emailParsed.Header.Get("Bcc"),
+		CC:        toList(emailParsed.Header.Get("Cc")),
+		BCC:       toList(emailParsed.Header.Get("Bcc")),
 		XFrom:     emailParsed.Header.Get("X-From"),
-		XTo:       emailParsed.Header.Get("X-To"),
-		XCC:       emailParsed.Header.Get("X-Cc"),
-		XBCC:      emailParsed.Header.Get("X-Bcc"),
+		XTo:       toList(emailParsed.Header.Get("X-To")),
+		XCC:       toList(emailParsed.Header.Get("X-Cc")),
+		XBCC:      toList(emailParsed.Header.Get("X-Bcc")),
 		XFolder:   emailParsed.Header.Get("X-Folder"),
 		XFileName: emailParsed.Header.Get("X-Filename"),
+		Content:   emailContentExtractor(emailParsed),
 	}
 
-	// Body from Reader to String
-	emailContent, err := io.ReadAll(emailParsed.Body)
-	if err == nil {
-		newEmail.Content = string(emailContent)
+	return email, nil
+}
+
+func emailContentExtractor(email *mail.Message) string {
+	emailContent, _ := io.ReadAll(email.Body)
+	return string(emailContent)
+}
+
+func toList(emails string) []string {
+	if emails == "" {
+		return []string{}
 	}
-	return newEmail, nil
+
+	return strings.Split(emails, ",")
 }
 
 //Converting email: /Users/ivanxgb/Desktop/mails/maildir/baughman-d/calendar/19.
