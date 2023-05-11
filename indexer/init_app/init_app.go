@@ -11,13 +11,13 @@ import (
 func Init() {
 	loadEnv()
 	dirPath := getDirectoryPath()
-	filesPath, err := de.GetFilesPath(dirPath)
+	filePaths, err := de.GetFilePaths(dirPath)
 
 	if err != nil {
-		utils.ErrorPrinter("There was an error getting the files path")
+		utils.ErrorPrinter("There was an error getting the paths of the files")
 	}
 
-	zu.SendFilesToServer(filesPath)
+	zu.ProcessFiles(&filePaths)
 }
 
 func getDirectoryPath() string {
