@@ -1,5 +1,16 @@
 package model
 
+import "encoding/json"
+
+type JsonParser interface {
+	ToJson() ([]byte, error)
+}
+
+type BulkV2 struct {
+	Index   string  `json:"index"`
+	Records []Email `json:"records"`
+}
+
 type Email struct {
 	MessageID string `json:"messageID"`
 	Date      string `json:"date"`
@@ -15,4 +26,8 @@ type Email struct {
 	XFolder   string `json:"xFolder"`
 	XFileName string `json:"xFileName"`
 	Content   string `json:"content"`
+}
+
+func (e *BulkV2) ToJson() ([]byte, error) {
+	return json.Marshal(e)
 }
