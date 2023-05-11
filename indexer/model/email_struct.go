@@ -12,20 +12,20 @@ type BulkV2 struct {
 }
 
 type Email struct {
-	MessageID string `json:"messageID"`
-	Date      string `json:"date"`
-	From      string `json:"from"`
-	To        string `json:"to"`
-	Subject   string `json:"subject"`
-	CC        string `json:"cc"`
-	BCC       string `json:"bcc"`
-	XFrom     string `json:"xFrom"`
-	XTo       string `json:"xTo"`
-	XCC       string `json:"xCC"`
-	XBCC      string `json:"xBCC"`
-	XFolder   string `json:"xFolder"`
-	XFileName string `json:"xFileName"`
-	Content   string `json:"content"`
+	MessageID string   `json:"message-id"`
+	Date      string   `json:"date"`
+	From      string   `json:"from"`
+	To        []string `json:"to"`
+	Subject   string   `json:"subject"`
+	CC        []string `json:"cc"`
+	BCC       []string `json:"bcc"`
+	XFrom     string   `json:"x-from"`
+	XTo       []string `json:"x-to"`
+	XCC       []string `json:"x-cc"`
+	XBCC      []string `json:"x-bcc"`
+	XFolder   string   `json:"x-folder"`
+	XFileName string   `json:"x-filename"`
+	Content   string   `json:"content"`
 }
 
 func (e *BulkV2) ToJson() ([]byte, error) {
