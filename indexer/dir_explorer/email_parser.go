@@ -10,6 +10,10 @@ import (
 	"strings"
 )
 
+const (
+	ZincIndex = "en_mails"
+)
+
 // EmailConverter receives a string that represents the path of the email to be read
 // and returns a model.Email struct with the email data
 func EmailConverter(filePath string) (model.Email, error) {
@@ -26,6 +30,15 @@ func EmailConverter(filePath string) (model.Email, error) {
 	}
 
 	return emailParsed, nil
+}
+
+func EmailsToBulkJson(emails []model.Email) ([]byte, error) {
+	emailBulk := model.BulkV2{
+		Index:   ZincIndex,
+		Records: emails,
+	}
+
+	return emailBulk.ToJson()
 }
 
 // EmailsToJSON receives a slice of model.Email and returns a slice of bytes that represents the emails in json format
