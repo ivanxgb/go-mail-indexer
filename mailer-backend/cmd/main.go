@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	el "mailer-backend/env_loader"
@@ -8,17 +9,19 @@ import (
 	"net/http"
 )
 
-const (
-	Port = ":2507"
+var (
+	port = flag.String("port", "1507", "Port to run the server on")
 )
 
 func main() {
 	el.LoadEnv()
+	flag.Parse()
+	port := fmt.Sprintf(":%s", *port)
+
 	router := api.GetRouter()
 
-	fmt.Println("Starting server at port ", Port)
-
-	err := http.ListenAndServe(Port, router)
+	fmt.Println("Server running on port", port)
+	err := http.ListenAndServe(port, router)
 
 	if err != nil {
 		log.Fatal(err)
