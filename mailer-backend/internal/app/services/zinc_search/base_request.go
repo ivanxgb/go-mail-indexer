@@ -1,45 +1,18 @@
-package z_adapter
+package zinc_search
 
 import (
 	"bytes"
 	"fmt"
 	"io"
-	"mailer-backend/models"
+	"mailer-backend/env_loader"
 	"net/http"
 )
 
-func SearchInMails(search string) ([]byte, error) {
-	query := fmt.Sprintf("SELECT * FROM default WHERE from LIKE '%%%s%%'", search)
-	body := models.Z_Search{
-		Query: models.Query{
-			Sql:  query,
-			Size: 100,
-		},
-	}
-
-	json, err := body.ToJson()
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println(string(json))
-
-	resp, err := postRequest(json)
-
-	if err != nil {
-		return nil, err
-	}
-
-	println(string(resp))
-
-	return resp, nil
-}
-
-func postRequest(json []byte) ([]byte, error) {
-	user, pass := "me@ivan.com", "Z_Challenge"
-	api := "http://18.235.128.9:5080/api/default/_search"
+func baseReq(json []byte) ([]byte, error) {
+	api, user, pass := env_loader.GetEnvData()
 
 	req, err := http.NewRequest("POST", api, bytes.NewBuffer(json))
+
 	if err != nil {
 		fmt.Println("There was an error creating the request")
 		return nil, err
@@ -48,9 +21,6 @@ func postRequest(json []byte) ([]byte, error) {
 	// Setting headers and auth
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth(user, pass)
-
-	// Setting useragent
-	req.Header.Set("User-Agent", "Z_Challenge")
 
 	// Creating a new client
 	client := &http.Client{}
@@ -72,6 +42,5 @@ func postRequest(json []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	body, _ := io.ReadAll(resp.Body)
-	return body, nil
+	return io.ReadAll(resp.Body)
 }
