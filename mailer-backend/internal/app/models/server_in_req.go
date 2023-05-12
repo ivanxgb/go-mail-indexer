@@ -6,10 +6,6 @@ import (
 	"io"
 )
 
-type BaseReq interface {
-	FromJson(data io.ReadCloser) (interface{}, error)
-}
-
 type Search struct {
 	Search string `json:"search"`
 }
