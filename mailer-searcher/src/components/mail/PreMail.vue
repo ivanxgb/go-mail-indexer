@@ -23,7 +23,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, defineProps } from 'vue'
+import { getInitialsName } from '@/utils/utils'
 
 const props = defineProps({
   msg: String,
@@ -31,8 +32,5 @@ const props = defineProps({
   date: String
 })
 
-const nameInitials = computed(() => {
-  const words = props.name?.split(' ')
-  return `${words?.[0]?.[0].toUpperCase() ?? 'N'}${words?.[1]?.[0].toUpperCase() ?? 'N'}`
-})
+const nameInitials = computed(() => getInitialsName(props.name))
 </script>
