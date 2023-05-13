@@ -9,6 +9,5 @@ func setMiddlewares(router *chi.Mux) {
 	router.Use(
 		middleware.Logger,
 		middleware.AllowContentType("application/json"),
-		middleware.SetHeader("content-type", "application/json"),
 	)
 }
