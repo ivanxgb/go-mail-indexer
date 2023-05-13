@@ -7,7 +7,7 @@ import (
 func GetRouter() *chi.Mux {
 	router := chi.NewRouter()
 	setMiddlewares(router)
-	setRoutes(router)
+	setHandlers(router)
 
 	return router
 }

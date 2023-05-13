@@ -9,6 +9,8 @@ const (
 	searchRoute = "/search"
 )
 
-func setRoutes(router *chi.Mux) {
+func setHandlers(router *chi.Mux) {
+	router.HandleFunc("/", handler.HomeHandler)
+	router.Handle("/assets/*", handler.AssetHandler())
 	router.Post(searchRoute, handler.SearchHandler)
 }
