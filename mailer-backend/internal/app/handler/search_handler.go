@@ -32,5 +32,8 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// set the response header as json
+	w.Header().Set("Content-Type", "application/json")
+
 	w.Write(resp)
 }
