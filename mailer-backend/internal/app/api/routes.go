@@ -6,11 +6,12 @@ import (
 )
 
 const (
-	searchRoute = "/search"
+	searchRoute = "/api/search"
 )
 
 func setHandlers(router *chi.Mux) {
 	router.HandleFunc("/", handler.HomeHandler)
 	router.Handle("/assets/*", handler.AssetHandler())
+
 	router.Post(searchRoute, handler.SearchHandler)
 }
