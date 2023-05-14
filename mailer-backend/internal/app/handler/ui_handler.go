@@ -1,23 +1,27 @@
 package handler
 
 import (
-	"io/fs"
 	"mailer-backend/ui"
 	"net/http"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == "/favicon.ico" {
-		rawFile, _ := ui.Frontend.ReadFile("dist/favicon.ico")
-		w.Write(rawFile)
+	index, favicon, err := ui.GetStaticFiles()
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	rawFile, _ := ui.Frontend.ReadFile("dist/index.html")
-	w.Write(rawFile)
+
+	if r.URL.Path == "/favicon.ico" {
+		w.Write(favicon)
+		return
+	}
+
+	w.Write(index)
 }
 
 func AssetHandler() http.Handler {
-	staticFs, _ := fs.Sub(ui.Frontend, "dist")
-
+	staticFs, _ := ui.GetAssets()
 	return http.FileServer(http.FS(staticFs))
 }
