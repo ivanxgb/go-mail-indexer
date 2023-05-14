@@ -37,5 +37,5 @@ func SearchInMails(search string) ([]byte, error) {
 		return nil, err
 	}
 
-	return zResp.Hits.ToJson()
+	return zResp.Hits.ToSearchResponseJson()
 }
