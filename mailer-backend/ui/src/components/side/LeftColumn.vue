@@ -10,7 +10,7 @@ mailStore.fetchMails("ivan");
 </script>
 
 <template>
-  <div class="border-x-2 mt-6 w-1/3 xl:w-1/4 2xl:w-1/5">
+  <div class="border-x-2 mt-6 md:w-1/2 lg:w-1/3 2xl:w-1/5">
     <Search />
     <PreMail v-for="mail in mails" :key="mail.id" :mailData="mail" />
   </div>
