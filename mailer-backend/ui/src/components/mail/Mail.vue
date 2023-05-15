@@ -2,12 +2,14 @@
   <section class="w-full px-4 rounded-r-3xl">
     <div class="flex justify-between items-center h-32 border-b-2 mb-8">
       <div class="flex space-x-4 items-center">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full shadow-lg">
+        <div
+          class="flex items-center justify-center w-12 h-12 rounded-full shadow-lg"
+        >
           <p class="text-gray-600 font-medium">{{ nameInitials }}</p>
         </div>
         <div>
-          <h3 class="font-semibold text-lg">Stefanny Guzman</h3>
-          <p class="text-light text-gray-400">stefannyguzbar@gmail.com</p>
+          <h3 class="font-semibold text-lg">{{ mail?.mail?.["x-from"] }}</h3>
+          <p class="text-light text-gray-400">{{ mail?.mail.from }}</p>
         </div>
       </div>
       <div>
@@ -31,12 +33,10 @@
       </div>
     </div>
     <section>
-      <h1 class="font-bold text-2xl">Team Appreciation</h1>
+      <h1 class="font-bold text-2xl">{{ mail?.mail.subject }}</h1>
       <article class="mt-8 text-gray-500 leading-7 tracking-wider">
         <p>
-          Design and develop enterprise-facing UI and consumer-facing UI as well as REST API
-          backends.Work with Product Managers and User Experience designers to create an appealing
-          user experience for desktop web and mobile web.
+          {{ mail?.mail.content }}
         </p>
       </article>
     </section>
@@ -44,14 +44,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineProps } from 'vue'
-import { getInitialsName } from '@/utils/utils'
+import { computed } from "vue";
+import { getInitialsName, parseDate } from "@/utils/utils";
+import { useEmailStore } from "@/stores/email_store";
 
-const props = defineProps({
-  msg: String,
-  name: String,
-  date: String
-})
-
-const nameInitials = computed(() => getInitialsName(props.name))
+const mailStore = useEmailStore();
+const mail = computed(() => mailStore.mailSelected);
+const dateParsed = computed(() => parseDate(mail?.value?.mail.date));
+const nameInitials = computed(() => getInitialsName(mail?.value?.mail.from));
 </script>
