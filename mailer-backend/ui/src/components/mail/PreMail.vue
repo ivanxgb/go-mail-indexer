@@ -1,7 +1,7 @@
 <template>
   <div
     :class="isMailSelected ? 'bg-slate-100' : ''"
-    class="w-full pb-4 border-y border-gray-300 hover:bg-slate-100 hover:cursor-pointer"
+    class="w-full px-2 pb-4 border-y border-gray-300 hover:bg-slate-100 hover:cursor-pointer"
     role="button"
     @click="handleMailClick"
   >
