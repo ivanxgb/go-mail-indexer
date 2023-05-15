@@ -12,6 +12,15 @@ mailStore.fetchMails("ivan");
 <template>
   <div class="border-x-2 mt-6 md:w-1/2 lg:w-1/3 2xl:w-1/5">
     <Search />
-    <PreMail v-for="mail in mails" :key="mail.id" :mailData="mail" />
+    <div class="wrapper">
+      <PreMail v-for="mail in mails" :key="mail.id" :mailData="mail" />
+    </div>
   </div>
 </template>
+
+<style scoped>
+.wrapper {
+  height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+</style>
