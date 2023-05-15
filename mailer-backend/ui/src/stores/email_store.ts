@@ -5,10 +5,15 @@ import { search } from "@/services/api_router";
 
 export const useEmailStore = defineStore("emails", () => {
   const mails = ref<MailData[]>([]);
+  const mailSelected = ref<MailData | null>(null);
 
   async function fetchMails(searchTerm: string = "") {
     mails.value = await search(searchTerm);
   }
 
-  return { mails, fetchMails };
+  function selectMail(mail: MailData) {
+    mailSelected.value = mail;
+  }
+
+  return { mails, mailSelected, selectMail, fetchMails };
 });
