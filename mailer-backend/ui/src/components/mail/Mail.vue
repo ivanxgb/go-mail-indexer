@@ -1,5 +1,17 @@
+<script lang="ts" setup>
+import { computed } from "vue";
+import MailToolTip from "@/components/mail/MailToolTip.vue";
+import { getInitialsName, parseDate } from "@/utils/utils";
+import { useEmailStore } from "@/stores/email_store";
+
+const mailStore = useEmailStore();
+const mail = computed(() => mailStore.mailSelected);
+const dateParsed = computed(() => parseDate(mail?.value?.mail.date));
+const nameInitials = computed(() => getInitialsName(mail?.value?.mail.from));
+</script>
+
 <template>
-  <section class="w-full px-4 rounded-r-3xl">
+  <section class="w-full h-full overflow-y-auto px-4 rounded-r-3xl">
     <div class="flex justify-between items-center h-32 border-b-2 mb-8">
       <div class="flex space-x-4 items-center">
         <div
@@ -34,14 +46,8 @@
   </section>
 </template>
 
-<script lang="ts" setup>
-import { computed } from "vue";
-import MailToolTip from "@/components/mail/MailToolTip.vue";
-import { getInitialsName, parseDate } from "@/utils/utils";
-import { useEmailStore } from "@/stores/email_store";
-
-const mailStore = useEmailStore();
-const mail = computed(() => mailStore.mailSelected);
-const dateParsed = computed(() => parseDate(mail?.value?.mail.date));
-const nameInitials = computed(() => getInitialsName(mail?.value?.mail.from));
-</script>
+<style scoped>
+section {
+  height: calc(100vh - 150px);
+}
+</style>
