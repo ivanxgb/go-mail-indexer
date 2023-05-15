@@ -6,12 +6,10 @@ package env_loader
 
 /*
 const (
-	API      = "https://api.zinc.dev/api"
-	ENDPOINT = "/COLLECTION_NAME/_json"
-
-	ORG_NAME = "your_org"
-	USERNAME = "your@mail.com"
-	PASSWORD = "YOUR_PASSWORD"
+	API      = "http://localhost:4080/api/"
+	ENDPOINT = "_bulkv2"
+	USERNAME = "user@domain.tld"
+	PASSWORD = "Your_Password"
 )
 */
 
