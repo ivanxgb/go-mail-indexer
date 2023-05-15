@@ -7,7 +7,7 @@ import (
 
 func bodyBuilder(search string) models.ZSearchReq {
 	return models.ZSearchReq{
-		SearchType: matchAll,
+		SearchType: match,
 		Query: models.ZQuery{
 			Term:  search,
 			Field: allFields,
