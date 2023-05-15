@@ -1,12 +1,15 @@
 package init_app
 
 import (
+	"flag"
 	de "indexer/dir_explorer"
 	"indexer/env_loader"
 	"indexer/utils"
 	zu "indexer/zinc_uploader"
 	"os"
 )
+
+var mailsDirPath = flag.String("mails", "../../../mails", "Path to the directory that contains the emails to be indexed")
 
 func Init() {
 	loadEnv()
@@ -21,11 +24,14 @@ func Init() {
 }
 
 func getDirectoryPath() string {
-	if len(os.Args) < 2 {
+	flag.Parse()
+
+	dirPath := *mailsDirPath
+
+	if dirPath == "" {
 		utils.ErrorPrinter("No directory path provided")
 	}
 
-	dirPath := os.Args[1]
 	checkDirectory(dirPath)
 
 	return dirPath
