@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	ia "indexer/init_app"
+	ia "indexer/internal/app/init"
 	"os"
 	"runtime/pprof"
 )
