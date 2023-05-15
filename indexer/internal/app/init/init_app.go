@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-var mailsDirPath = flag.String("mails", "../../../mails", "Path to the directory that contains the emails to be indexed")
+var mailsDirPath = flag.String("mails", "/Users/ivanxgb/Developer/mails", "Path to the directory that contains the emails to be indexed")
 
 func Init() {
 	loadEnv()
