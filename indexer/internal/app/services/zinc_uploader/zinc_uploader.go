@@ -3,9 +3,9 @@ package zinc_uploader
 import (
 	"bytes"
 	"fmt"
-	de "indexer/dir_explorer"
 	el "indexer/env_loader"
-	"indexer/model"
+	de "indexer/internal/app/dir_explorer"
+	"indexer/internal/app/model"
 	"net/http"
 	"sync"
 )

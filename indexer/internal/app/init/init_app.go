@@ -1,11 +1,11 @@
-package init_app
+package app
 
 import (
 	"flag"
-	de "indexer/dir_explorer"
 	"indexer/env_loader"
-	"indexer/utils"
-	zu "indexer/zinc_uploader"
+	de "indexer/internal/app/dir_explorer"
+	zu "indexer/internal/app/services/zinc_uploader"
+	"indexer/internal/app/utils"
 	"os"
 )
 

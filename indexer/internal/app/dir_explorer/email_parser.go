@@ -3,8 +3,8 @@ package dir_explorer
 import (
 	"encoding/json"
 	"fmt"
-	"indexer/model"
-	"indexer/utils"
+	"indexer/internal/app/model"
+	"indexer/internal/app/utils"
 	"io"
 	"net/mail"
 	"strings"
