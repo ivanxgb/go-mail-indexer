@@ -1,8 +1,6 @@
-package dir_explorer
+package handler
 
 import (
-	"encoding/json"
-	"fmt"
 	"indexer/internal/app/model"
 	"indexer/internal/app/utils"
 	"io"
@@ -23,31 +21,11 @@ func EmailConverter(filePath string) (model.Email, error) {
 		return model.Email{}, err
 	}
 
-	return parseMail(content)
+	return mailToStruct(content)
 }
 
-func EmailsToBulkJson(emails *[]model.Email) ([]byte, error) {
-	emailBulk := model.BulkV2{
-		Index:   ZincIndex,
-		Records: *emails,
-	}
-
-	return emailBulk.ToJson()
-}
-
-// EmailsToJSON receives a slice of model.Email and returns a slice of bytes that represents the emails in json format
-func EmailsToJSON(emails []model.Email) ([]byte, error) {
-	emailsAsJson, err := json.Marshal(emails)
-	if err != nil {
-		fmt.Println("There was an error converting the emails to json")
-		return nil, err
-	}
-
-	return emailsAsJson, nil
-}
-
-// parseMail receives a string that represents the content of the email and returns a model.Email struct with the email data
-func parseMail(content string) (model.Email, error) {
+// mailToStruct receives a string that represents the content of the mail fail and returns a model.Email struct with the file data
+func mailToStruct(content string) (model.Email, error) {
 	emailAsReader := strings.NewReader(content)
 	emailParsed, err := mail.ReadMessage(emailAsReader)
 
@@ -75,11 +53,13 @@ func parseMail(content string) (model.Email, error) {
 	return email, nil
 }
 
+// emailContentExtractor receives a mail.Message and returns the content of the email as a string
 func emailContentExtractor(email *mail.Message) string {
 	emailContent, _ := io.ReadAll(email.Body)
 	return string(emailContent)
 }
 
+// toList receives a string that represents a list of email addresses separated by comma and returns a slice of strings
 func toList(emails string) []string {
 	if emails == "" {
 		return []string{}
@@ -87,5 +67,3 @@ func toList(emails string) []string {
 
 	return strings.Split(emails, ",")
 }
-
-//Converting email: /Users/ivanxgb/Desktop/mails/maildir/baughman-d/calendar/19.
