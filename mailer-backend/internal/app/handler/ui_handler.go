@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+// HomeHandler handles the home route and serves the index.html file from the
+// ui package (frontend).
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	index, favicon, err := ui.GetStaticFiles()
 
@@ -21,6 +23,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(index)
 }
 
+// AssetHandler handles the assets route and serves the static files from the
+// ui package (frontend).
 func AssetHandler() http.Handler {
 	staticFs, _ := ui.GetAssets()
 	return http.FileServer(http.FS(staticFs))

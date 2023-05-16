@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+// SearchHandler handles api requests to the search /api/route and returns the
+// results from the zinc search server.
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	// If the request body is empty
 	if r.Body == nil {
