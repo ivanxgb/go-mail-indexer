@@ -1,19 +1,34 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import type { MailData } from "@/model/SearchResponseModel";
-import { search } from "@/services/api_router";
+import { fetchSearch, fetchSummary } from "@/services/api_router";
 
 export const useEmailStore = defineStore("emails", () => {
   const mails = ref<MailData[]>([]);
   const mailSelected = ref<MailData | null>(null);
+  const mailSummary = ref<string | null>(null);
 
-  async function fetchMails(searchTerm: string = "") {
-    mails.value = await search(searchTerm);
+  async function getSummary(mailContent: string) {
+    const resp = await fetchSummary(mailContent);
+    console.log("Response", resp.content);
+    mailSummary.value = resp.content;
+  }
+
+  async function getMails(searchTerm: string = "") {
+    mails.value = await fetchSearch(searchTerm);
   }
 
   function selectMail(mail: MailData) {
     mailSelected.value = mail;
+    mailSummary.value = null;
   }
 
-  return { mails, mailSelected, selectMail, fetchMails };
+  return {
+    mails,
+    mailSelected,
+    mailSummary,
+    getSummary,
+    selectMail,
+    fetchMails: getMails
+  };
 });
