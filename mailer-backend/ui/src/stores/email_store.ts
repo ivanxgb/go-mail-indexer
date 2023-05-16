@@ -10,7 +10,6 @@ export const useEmailStore = defineStore("emails", () => {
 
   async function getSummary(mailContent: string) {
     const resp = await fetchSummary(mailContent);
-    console.log("Response", resp.content);
     mailSummary.value = resp.content;
   }
 

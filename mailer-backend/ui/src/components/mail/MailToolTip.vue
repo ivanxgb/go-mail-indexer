@@ -9,10 +9,7 @@ const mailTo = computed(() => mail?.value?.to.join(", "));
 const dateParsed = computed(() => parseDate(mail?.value?.date));
 const showTooltip = ref(false);
 
-const toggleTooltip = (show: boolean) => {
-  console.log("showing tooltip");
-  showTooltip.value = show;
-};
+const toggleTooltip = (show: boolean) => (showTooltip.value = show);
 </script>
 
 <template>
@@ -46,10 +43,10 @@ const toggleTooltip = (show: boolean) => {
 
 <style scoped>
 div > p {
-  @apply text-sm text-gray-600;
+  @apply text-sm text-gray-700 font-semibold;
 }
 
 span {
-  @apply text-xs text-gray-500;
+  @apply text-xs text-gray-600 font-normal;
 }
 </style>
