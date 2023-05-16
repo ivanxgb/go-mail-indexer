@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 # Start ZincSearch
-cd ~/Developer/truora/zincsearch/
+cd ~/Developer/zincsearch/
 
 # Start ZincSearch
 ./zincsearch
