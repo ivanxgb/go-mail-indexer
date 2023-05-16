@@ -5,16 +5,7 @@ import (
 	"mailer-backend/internal/app/models"
 )
 
-func bodyBuilder(search string) models.ZSearchReq {
-	return models.ZSearchReq{
-		SearchType: match,
-		Query: models.ZQuery{
-			Term:  search,
-			Field: allFields,
-		},
-	}
-}
-
+// SearchInMails receives a search string and returns the results from the zinc search server.
 func SearchInMails(search string) ([]byte, error) {
 	body := bodyBuilder(search)
 	bodyAsJson, err := body.ToJson()
@@ -38,4 +29,16 @@ func SearchInMails(search string) ([]byte, error) {
 	}
 
 	return zResp.Hits.ToSearchResponseJson()
+}
+
+// bodyBuilder receives a search string and returns a models.ZSearchReq struct with the search data
+// to be sent to the zinc search server.
+func bodyBuilder(search string) models.ZSearchReq {
+	return models.ZSearchReq{
+		SearchType: match,
+		Query: models.ZQuery{
+			Term:  search,
+			Field: allFields,
+		},
+	}
 }

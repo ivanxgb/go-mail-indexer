@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// baseReq is a function that sends a request to the zinc search server
 func baseReq(json []byte) ([]byte, error) {
 	api, user, pass := env_loader.GetEnvData()
 
