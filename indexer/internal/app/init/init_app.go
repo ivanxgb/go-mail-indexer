@@ -2,49 +2,20 @@ package app
 
 import (
 	"flag"
-	"indexer/env_loader"
-	de "indexer/internal/app/dir_explorer"
-	zu "indexer/internal/app/services/zinc_uploader"
-	"indexer/internal/app/utils"
-	"os"
+	ev "indexer/env_loader"
+	"indexer/internal/app/handler"
 )
 
-var mailsDirPath = flag.String("mails", "/Users/ivanxgb/Developer/mails", "Path to the directory that contains the emails to be indexed")
-
 func Init() {
-	loadEnv()
-	dirPath := getDirectoryPath()
-	filePaths, err := de.GetFilePaths(dirPath)
-
-	if err != nil {
-		utils.ErrorPrinter("There was an error getting the paths of the files")
-	}
-
-	zu.ProcessFiles(&filePaths)
-}
-
-func getDirectoryPath() string {
 	flag.Parse()
+	loadEnv()
 
-	dirPath := *mailsDirPath
+	dirPath := getDirectoryPath()
+	filePaths := getFilePaths(dirPath)
 
-	if dirPath == "" {
-		utils.ErrorPrinter("No directory path provided")
-	}
-
-	checkDirectory(dirPath)
-
-	return dirPath
-}
-
-func checkDirectory(dirPath string) {
-	dirInfo, err := os.Stat(dirPath)
-
-	if err != nil || !dirInfo.IsDir() {
-		utils.ErrorPrinter("Invalid directory path provided")
-	}
+	handler.ProcessFiles(&filePaths, *zIndex)
 }
 
 func loadEnv() {
-	env_loader.ExportEnv()
+	ev.ExportEnv()
 }
