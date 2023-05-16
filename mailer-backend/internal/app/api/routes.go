@@ -6,7 +6,8 @@ import (
 )
 
 const (
-	searchRoute = "/api/search"
+	searchRoute  = "/api/search"
+	summaryRoute = "/api/summary"
 )
 
 // setHandlers sets the handlers for the router.
@@ -15,4 +16,5 @@ func setHandlers(router *chi.Mux) {
 	router.Handle("/assets/*", handler.AssetHandler())
 
 	router.Post(searchRoute, handler.SearchHandler)
+	router.Post(summaryRoute, handler.SummaryHandler)
 }
