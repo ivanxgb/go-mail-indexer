@@ -9,6 +9,7 @@ const (
 	searchRoute = "/api/search"
 )
 
+// setHandlers sets the handlers for the router.
 func setHandlers(router *chi.Mux) {
 	router.HandleFunc("/", handler.HomeHandler)
 	router.Handle("/assets/*", handler.AssetHandler())
