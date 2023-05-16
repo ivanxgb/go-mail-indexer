@@ -1,13 +1,21 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import MailToolTip from "@/components/mail/MailToolTip.vue";
-import { getInitialsName, parseDate } from "@/utils/utils";
+import Summary from "@/components/mail/Summary.vue";
+import { cleanEnronFormat, getInitialsName, parseDate } from "@/utils/utils";
 import { useEmailStore } from "@/stores/email_store";
 
 const mailStore = useEmailStore();
 const mail = computed(() => mailStore.mailSelected);
+const fromCleaned = computed(() => cleanEnronFormat(mail?.value?.mail?.from));
 const dateParsed = computed(() => parseDate(mail?.value?.mail.date));
-const nameInitials = computed(() => getInitialsName(mail?.value?.mail.from));
+const mailSummary = computed(() => mailStore.mailSummary);
+const nameInitials = computed(() => getInitialsName(fromCleaned.value));
+const xFromCleaned = computed(() =>
+  cleanEnronFormat(mail?.value?.mail?.["x-from"])
+);
+
+const getSummary = () => mailStore.getSummary(mail.value?.mail.content!);
 </script>
 
 <template>
@@ -20,14 +28,18 @@ const nameInitials = computed(() => getInitialsName(mail?.value?.mail.from));
           <p class="text-gray-600 font-medium">{{ nameInitials }}</p>
         </div>
         <div>
-          <h3 class="font-semibold text-lg">{{ mail?.mail?.["x-from"] }}</h3>
-          <p class="text-light text-gray-400">{{ mail?.mail.from }}</p>
+          <h3 class="font-semibold text-lg">{{ xFromCleaned }}</h3>
+          <p class="text-light text-gray-600">{{ fromCleaned }}</p>
         </div>
       </div>
       <div>
         <ul class="flex text-gray-400 space-x-4">
-          <li class="w-6 h-6 cursor-pointer hover:text-black">
-            <img alt="Delete" src="@/assets/trash.svg" />
+          <li
+            v-if="mail?.mail.content"
+            class="w-6 h-6 cursor-pointer"
+            @click="getSummary()"
+          >
+            <img alt="summary" src="@/assets/message.svg" />
           </li>
           <li class="w-6 h-6">
             <MailToolTip :mail="mail?.mail" />
@@ -37,8 +49,14 @@ const nameInitials = computed(() => getInitialsName(mail?.value?.mail.from));
     </div>
     <section>
       <h1 class="font-bold text-2xl">{{ mail?.mail.subject }}</h1>
-      <article class="mt-8 text-gray-500 leading-7 tracking-wider">
-        <p>
+
+      <Summary
+        v-if="mailSummary !== null"
+        :summary="mailSummary"
+        class="mt-4"
+      />
+      <article class="mt-8 text-base text-justify text-gray-700">
+        <p class="whitespace-pre-line">
           {{ mail?.mail.content }}
         </p>
       </article>
