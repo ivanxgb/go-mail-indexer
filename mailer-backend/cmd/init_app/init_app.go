@@ -1,4 +1,4 @@
-package main
+package init_app
 
 import (
 	"flag"
@@ -20,7 +20,7 @@ var (
 	port = flag.String("port", "1507", "Port to run the server on")
 )
 
-func initApp() {
+func InitApp() {
 	flag.Parse()
 	el.LoadEnv()
 	port := fmt.Sprintf(":%s", *port)
