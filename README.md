@@ -1,5 +1,9 @@
 # Go Mail-Indexer
 
+## Objective
+
+The main objective of this project was to learn Golang and Vue3. Throughout this project, I acquired knowledge in using Go to manipulate data on a machine while simultaneously uploading it to a database. Additionally, I developed API endpoints using Golang to expose this data.
+
 ## Description
 
 ***Go Mail-Indexer*** is an application that given a directory route of mail files, it will search through the files and 
